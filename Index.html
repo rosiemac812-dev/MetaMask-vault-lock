@@ -1,0 +1,1459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MetaMask VaultLock - Advanced Wallet Security</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4D148C;
+            --secondary: #FF6600;
+            --danger: #dc3545;
+            --success: #28a745;
+            --warning: #ffc107;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --gradient: linear-gradient(135deg, #4D148C 0%, #6a1b9a 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--dark);
+            color: var(--light);
+            line-height: 1.6;
+        }
+
+        /* Header */
+        header {
+            background: var(--gradient);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo i {
+            color: var(--secondary);
+        }
+
+        .security-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255,255,255,0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Hero Section */
+        .hero {
+            background: var(--gradient);
+            padding: 4rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,102,0,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Security Dashboard */
+        .security-dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .security-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .security-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient);
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
+
+        .security-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .security-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border-color: var(--secondary);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .card-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-top: 0.5rem;
+        }
+
+        .status-secure {
+            background: rgba(40, 167, 69, 0.2);
+            color: var(--success);
+        }
+
+        .status-warning {
+            background: rgba(255, 193, 7, 0.2);
+            color: var(--warning);
+        }
+
+        .status-danger {
+            background: rgba(220, 53, 69, 0.2);
+            color: var(--danger);
+        }
+
+        /* Lock Controls */
+        .lock-controls {
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .lock-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .lock-item {
+            background: rgba(0,0,0,0.2);
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .lock-item:hover {
+            border-color: var(--secondary);
+            background: rgba(255,102,0,0.1);
+        }
+
+        .lock-item.active {
+            border-color: var(--success);
+            background: rgba(40, 167, 69, 0.1);
+        }
+
+        .lock-item i {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--secondary);
+        }
+
+        .lock-item.active i {
+            color: var(--success);
+        }
+
+        /* Wallet Connection */
+        .wallet-section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 3rem;
+            margin: 3rem 0;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .connect-btn {
+            background: var(--gradient);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .connect-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(255,102,0,0.4);
+        }
+
+        .wallet-info {
+            display: none;
+            margin-top: 2rem;
+            text-align: left;
+        }
+
+        .wallet-info.active {
+            display: block;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .info-item {
+            background: rgba(0,0,0,0.2);
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        .info-label {
+            font-size: 0.85rem;
+            opacity: 0.7;
+            margin-bottom: 0.3rem;
+        }
+
+        .info-value {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        /* Security Log */
+        .security-log {
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .log-entry {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            transition: background 0.3s;
+        }
+
+        .log-entry:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .log-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .log-success { background: rgba(40, 167, 69, 0.2); color: var(--success); }
+        .log-warning { background: rgba(255, 193, 7, 0.2); color: var(--warning); }
+        .log-danger { background: rgba(220, 53, 69, 0.2); color: var(--danger); }
+
+        .log-content {
+            flex: 1;
+        }
+
+        .log-title {
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+
+        .log-time {
+            font-size: 0.85rem;
+            opacity: 0.7;
+        }
+
+        /* Emergency Section */
+        .emergency-section {
+            background: linear-gradient(135deg, rgba(220, 53, 69, 0.1) 0%, rgba(255, 102, 0, 0.1) 100%);
+            border: 2px solid var(--danger);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 3rem 0;
+            text-align: center;
+        }
+
+        .emergency-btn {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+
+        .emergency-btn:hover {
+            background: #c82333;
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(220, 53, 69, 0.4);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--dark);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideIn 0.3s;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h2 {
+            color: var(--secondary);
+        }
+
+        .close-btn {
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.3s;
+        }
+
+        .close-btn:hover {
+            color: white;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--secondary);
+        }
+
+        /* Toggle Switch */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 1rem 0;
+        }
+
+        .toggle {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle.active {
+            background: var(--success);
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        .toggle.active .toggle-slider {
+            transform: translateX(30px);
+        }
+
+        /* Progress Bar */
+        .security-score {
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .score-circle svg {
+            transform: rotate(-90deg);
+        }
+
+        .score-circle-bg {
+            fill: none;
+            stroke: rgba(255,255,255,0.1);
+            stroke-width: 10;
+        }
+
+        .score-circle-progress {
+            fill: none;
+            stroke: var(--secondary);
+            stroke-width: 10;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 1s;
+        }
+
+        .score-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(0,0,0,0.3);
+            padding: 2rem 0;
+            margin-top: 4rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            text-align: center;
+            opacity: 0.7;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .security-dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .wallet-section {
+                padding: 2rem 1rem;
+            }
+        }
+
+        /* Animations */
+        .shake {
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .glow {
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { box-shadow: 0 0 5px var(--secondary), 0 0 10px var(--secondary); }
+            to { box-shadow: 0 0 20px var(--secondary), 0 0 30px var(--secondary); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <i class="fas fa-shield-alt"></i>
+                MetaMask VaultLock
+            </div>
+            <div class="security-status">
+                <div class="status-indicator"></div>
+                <span>System Secure</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1><i class="fas fa-lock"></i> Advanced Wallet Security</h1>
+            <p>Protect your MetaMask wallet with military-grade security features, multi-layer authentication, and real-time threat monitoring</p>
+        </div>
+    </section>
+
+    <!-- Main Container -->
+    <div class="container">
+
+        <!-- Security Score -->
+        <div class="security-score">
+            <h2>Security Score</h2>
+            <div class="score-circle">
+                <svg width="150" height="150">
+                    <circle class="score-circle-bg" cx="75" cy="75" r="65"></circle>
+                    <circle class="score-circle-progress" cx="75" cy="75" r="65" 
+                            stroke-dasharray="408" 
+                            stroke-dashoffset="102"></circle>
+                </svg>
+                <div class="score-text">75%</div>
+            </div>
+            <p>Your wallet security is good, but can be improved</p>
+        </div>
+
+        <!-- Security Dashboard -->
+        <div class="security-dashboard">
+            <!-- Multi-Sig Protection -->
+            <div class="security-card" onclick="openModal('multisigModal')">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-users-cog"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">Multi-Signature</div>
+                        <div class="card-status status-warning">
+                            <i class="fas fa-exclamation-triangle"></i> Not Configured
+                        </div>
+                    </div>
+                </div>
+                <p>Require multiple approvals for transactions above a certain threshold</p>
+            </div>
+
+            <!-- Time Lock -->
+            <div class="security-card" onclick="openModal('timelockModal')">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">Time Lock</div>
+                        <div class="card-status status-secure">
+                            <i class="fas fa-check-circle"></i> Active
+                        </div>
+                    </div>
+                </div>
+                <p>Delay sensitive transactions by 24-48 hours for review and cancellation</p>
+            </div>
+
+            <!-- Spending Limits -->
+            <div class="security-card" onclick="openModal('limitsModal')">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">Spending Limits</div>
+                        <div class="card-status status-secure">
+                            <i class="fas fa-check-circle"></i> Configured
+                        </div>
+                    </div>
+                </div>
+                <p>Set daily/weekly transaction limits to prevent large unauthorized transfers</p>
+            </div>
+
+            <!-- Hardware Wallet -->
+            <div class="security-card" onclick="openModal('hardwareModal')">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-usb"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">Hardware Wallet</div>
+                        <div class="card-status status-warning">
+                            <i class="fas fa-exclamation-triangle"></i> Not Linked
+                        </div>
+                    </div>
+                </div>
+                <p>Connect Ledger or Trezor for offline private key storage</p>
+            </div>
+
+            <!-- Biometric Lock -->
+            <div class="security-card" onclick="openModal('biometricModal')">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-fingerprint"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">Biometric Lock</div>
+                        <div class="card-status status-secure">
+                            <i class="fas fa-check-circle"></i> Enabled
+                        </div>
+                    </div>
+                </div>
+                <p>Require fingerprint or face recognition for wallet access</p>
+            </div>
+
+            <!-- Whitelist -->
+            <div class="security-card" onclick="openModal('whitelistModal')">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-list-check"></i>
+                    </div>
+                    <div>
+                        <div class="card-title">Address Whitelist</div>
+                        <div class="card-status status-secure">
+                            <i class="fas fa-check-circle"></i> 5 Addresses
+                        </div>
+                    </div>
+                </div>
+                <p>Only allow transactions to pre-approved addresses</p>
+            </div>
+        </div>
+
+        <!-- Lock Controls -->
+        <div class="lock-controls">
+            <h2><i class="fas fa-shield-alt"></i> Security Lock Controls</h2>
+            <p>Activate additional protection layers for your wallet</p>
+            
+            <div class="lock-grid">
+                <div class="lock-item" onclick="toggleLock(this, 'transactionLock')">
+                    <i class="fas fa-exchange-alt"></i>
+                    <h3>Transaction Lock</h3>
+                    <p>Pause all outgoing transactions</p>
+                </div>
+                
+                <div class="lock-item" onclick="toggleLock(this, 'dappLock')">
+                    <i class="fas fa-window-restore"></i>
+                    <h3>DApp Lock</h3>
+                    <p>Block all dApp connections</p>
+                </div>
+                
+                <div class="lock-item active" onclick="toggleLock(this, 'approvalLock')">
+                    <i class="fas fa-check-double"></i>
+                    <h3>Approval Lock</h3>
+                    <p>Prevent token approvals</p>
+                </div>
+                
+                <div class="lock-item" onclick="toggleLock(this, 'signatureLock')">
+                    <i class="fas fa-signature"></i>
+                    <h3>Signature Lock</h3>
+                    <p>Block message signing</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wallet Connection -->
+        <div class="wallet-section">
+            <h2><i class="fas fa-wallet"></i> Connect Your Wallet</h2>
+            <p>Link your MetaMask to enable advanced security features</p>
+            
+            <button class="connect-btn" id="connectBtn" onclick="connectWallet()">
+                <i class="fas fa-link"></i> Connect MetaMask
+            </button>
+            
+            <div class="wallet-info" id="walletInfo">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Connected Account</div>
+                        <div class="info-value" id="accountAddress">Not Connected</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Network</div>
+                        <div class="info-value" id="networkName">--</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Balance</div>
+                        <div class="info-value" id="balance">0 ETH</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Security Level</div>
+                        <div class="info-value" style="color: var(--success);">High</div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 2rem;">
+                    <button class="connect-btn" onclick="disconnectWallet()">
+                        <i class="fas fa-unlink"></i> Disconnect
+                    </button>
+                    <button class="connect-btn" style="margin-left: 1rem; background: var(--danger);" onclick="emergencyLock()">
+                        <i class="fas fa-lock"></i> Emergency Lock
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Security Log -->
+        <div class="security-log">
+            <h2><i class="fas fa-history"></i> Security Activity Log</h2>
+            
+            <div class="log-entry">
+                <div class="log-icon log-success">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="log-content">
+                    <div class="log-title">Time Lock Activated</div>
+                    <div class="log-time">2 minutes ago • All transactions now require 24h delay</div>
+                </div>
+            </div>
+            
+            <div class="log-entry">
+                <div class="log-icon log-warning">
+                    <i class="fas fa-exclamation"></i>
+                </div>
+                <div class="log-content">
+                    <div class="log-title">Suspicious dApp Connection Blocked</div>
+                    <div class="log-time">15 minutes ago • Uniswap phishing attempt detected and blocked</div>
+                </div>
+            </div>
+            
+            <div class="log-entry">
+                <div class="log-icon log-success">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="log-content">
+                    <div class="log-title">Spending Limit Updated</div>
+                    <div class="log-time">1 hour ago • Daily limit set to 2.5 ETH</div>
+                </div>
+            </div>
+            
+            <div class="log-entry">
+                <div class="log-icon log-danger">
+                    <i class="fas fa-ban"></i>
+                </div>
+                <div class="log-content">
+                    <div class="log-title">High-Value Transaction Blocked</div>
+                    <div class="log-time">3 hours ago • 10 ETH transfer blocked pending multi-sig approval</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Emergency Section -->
+        <div class="emergency-section">
+            <h2><i class="fas fa-radiation"></i> Emergency Protocols</h2>
+            <p>In case of suspected compromise, immediately activate emergency lockdown</p>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1.5rem;">
+                <button class="emergency-btn" onclick="emergencyFreeze()">
+                    <i class="fas fa-snowflake"></i> Freeze All
+                </button>
+                <button class="emergency-btn" onclick="emergencyDisconnect()">
+                    <i class="fas fa-plug"></i> Disconnect All
+                </button>
+                <button class="emergency-btn" onclick="emergencyRevoke()">
+                    <i class="fas fa-undo"></i> Revoke Approvals
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2025 MetaMask VaultLock. Protecting Web3 Assets</p>
+            <p style="margin-top: 0.5rem; font-size: 0.9rem;">
+                <i class="fas fa-shield-alt"></i> Military-grade encryption • 
+                <i class="fas fa-lock"></i> Non-custodial security • 
+                <i class="fas fa-user-shield"></i> Privacy focused
+            </p>
+        </div>
+    </footer>
+
+    <!-- Modals -->
+    
+    <!-- Multi-Sig Modal -->
+    <div class="modal" id="multisigModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Configure Multi-Signature</h2>
+                <span class="close-btn" onclick="closeModal('multisigModal')">&times;</span>
+            </div>
+            <p>Require multiple approvals for transactions above a threshold</p>
+            
+            <div class="form-group">
+                <label>Threshold Amount (ETH)</label>
+                <input type="number" id="thresholdAmount" placeholder="1.0" step="0.1">
+            </div>
+            
+            <div class="form-group">
+                <label>Required Signers</label>
+                <select id="requiredSigners">
+                    <option value="2">2 of 3</option>
+                    <option value="3">3 of 5</option>
+                    <option value="4">4 of 7</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Secondary Signer Address</label>
+                <input type="text" id="signerAddress" placeholder="0x...">
+            </div>
+            
+            <button class="connect-btn" style="width: 100%;" onclick="saveMultiSig()">
+                Configure Multi-Sig
+            </button>
+        </div>
+    </div>
+
+    <!-- Time Lock Modal -->
+    <div class="modal" id="timelockModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Time Lock Settings</h2>
+                <span class="close-btn" onclick="closeModal('timelockModal')">&times;</span>
+            </div>
+            
+            <div class="toggle-container">
+                <span>Enable Time Lock</span>
+                <div class="toggle active" onclick="this.classList.toggle('active')">
+                    <div class="toggle-slider"></div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Delay Duration</label>
+                <select id="delayDuration">
+                    <option value="24">24 Hours</option>
+                    <option value="48">48 Hours</option>
+                    <option value="72">72 Hours</option>
+                    <option value="168">7 Days</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Apply to transactions above (ETH)</label>
+                <input type="number" value="0.5" step="0.1">
+            </div>
+            
+            <button class="connect-btn" style="width: 100%;" onclick="saveTimeLock()">
+                Save Settings
+            </button>
+        </div>
+    </div>
+
+    <!-- Spending Limits Modal -->
+    <div class="modal" id="limitsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Spending Limits</h2>
+                <span class="close-btn" onclick="closeModal('limitsModal')">&times;</span>
+            </div>
+            
+            <div class="form-group">
+                <label>Daily Limit (ETH)</label>
+                <input type="number" id="dailyLimit" value="2.5" step="0.1">
+            </div>
+            
+            <div class="form-group">
+                <label>Weekly Limit (ETH)</label>
+                <input type="number" id="weeklyLimit" value="10.0" step="0.1">
+            </div>
+            
+            <div class="form-group">
+                <label>Monthly Limit (ETH)</label>
+                <input type="number" id="monthlyLimit" value="50.0" step="0.1">
+            </div>
+            
+            <div class="toggle-container">
+                <span>Require approval for limit changes</span>
+                <div class="toggle active" onclick="this.classList.toggle('active')">
+                    <div class="toggle-slider"></div>
+                </div>
+            </div>
+            
+            <button class="connect-btn" style="width: 100%;" onclick="saveLimits()">
+                Update Limits
+            </button>
+        </div>
+    </div>
+
+    <!-- Hardware Wallet Modal -->
+    <div class="modal" id="hardwareModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Connect Hardware Wallet</h2>
+                <span class="close-btn" onclick="closeModal('hardwareModal')">&times;</span>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.5rem 0;">
+                <div class="lock-item" onclick="selectHardware('ledger')">
+                    <i class="fas fa-usb"></i>
+                    <h3>Ledger</h3>
+                </div>
+                <div class="lock-item" onclick="selectHardware('trezor')">
+                    <i class="fas fa-usb"></i>
+                    <h3>Trezor</h3>
+                </div>
+            </div>
+            
+            <p style="margin: 1rem 0; font-size: 0.9rem; opacity: 0.8;">
+                <i class="fas fa-info-circle"></i> 
+                Connect your hardware wallet and follow the instructions on the device
+            </p>
+            
+            <button class="connect-btn" style="width: 100%;" onclick="connectHardware()">
+                Connect Device
+            </button>
+        </div>
+    </div>
+
+    <!-- Biometric Modal -->
+    <div class="modal" id="biometricModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Biometric Authentication</h2>
+                <span class="close-btn" onclick="closeModal('biometricModal')">&times;</span>
+            </div>
+            
+            <div class="toggle-container">
+                <span>Enable Fingerprint</span>
+                <div class="toggle active" onclick="this.classList.toggle('active')">
+                    <div class="toggle-slider"></div>
+                </div>
+            </div>
+            
+            <div class="toggle-container">
+                <span>Enable Face Recognition</span>
+                <div class="toggle" onclick="this.classList.toggle('active')">
+                    <div class="toggle-slider"></div>
+                </div>
+            </div>
+            
+            <div class="toggle-container">
+                <span>Require biometric for all transactions</span>
+                <div class="toggle active" onclick="this.classList.toggle('active')">
+                    <div class="toggle-slider"></div>
+                </div>
+            </div>
+            
+            <button class="connect-btn" style="width: 100%; margin-top: 1rem;" onclick="saveBiometric()">
+                Save Biometric Settings
+            </button>
+        </div>
+    </div>
+
+    <!-- Whitelist Modal -->
+    <div class="modal" id="whitelistModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Address Whitelist</h2>
+                <span class="close-btn" onclick="closeModal('whitelistModal')">&times;</span>
+            </div>
+            
+            <div class="form-group">
+                <label>Add New Address</label>
+                <input type="text" id="newAddress" placeholder="0x...">
+            </div>
+            
+            <div class="form-group">
+                <label>Label (Optional)</label>
+                <input type="text" id="addressLabel" placeholder="e.g., Exchange, Friend, etc.">
+            </div>
+            
+            <button class="connect-btn" style="width: 100%; margin-bottom: 1rem;" onclick="addToWhitelist()">
+                Add to Whitelist
+            </button>
+            
+            <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px; max-height: 200px; overflow-y: auto;">
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <span>0x71C...9A2B (Exchange)</span>
+                    <i class="fas fa-trash" style="color: var(--danger); cursor: pointer;"></i>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <span>0x8F3...2C4D (Hardware Wallet)</span>
+                    <i class="fas fa-trash" style="color: var(--danger); cursor: pointer;"></i>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0;">
+                    <span>0x2A9...7E1F (Family)</span>
+                    <i class="fas fa-trash" style="color: var(--danger); cursor: pointer;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // MetaMask Integration
+        let provider;
+        let currentAccount;
+        let isConnected = false;
+
+        // Initialize
+        window.addEventListener('load', async () => {
+            if (typeof window.ethereum !== 'undefined') {
+                provider = window.ethereum;
+                checkConnection();
+            } else {
+                showNotification('MetaMask not detected. Please install MetaMask.', 'warning');
+            }
+        });
+
+        // Check existing connection
+        async function checkConnection() {
+            try {
+                const accounts = await provider.request({ method: 'eth_accounts' });
+                if (accounts.length > 0) {
+                    currentAccount = accounts[0];
+                    isConnected = true;
+                    updateWalletUI();
+                    await getWalletDetails();
+                }
+            } catch (error) {
+                console.error('Connection check failed:', error);
+            }
+        }
+
+        // Connect wallet
+        async function connectWallet() {
+            if (!provider) {
+                alert('MetaMask not detected. Please install it from https://metamask.io');
+                return;
+            }
+
+            try {
+                const accounts = await provider.request({ 
+                    method: 'eth_requestAccounts' 
+                });
+                
+                currentAccount = accounts[0];
+                isConnected = true;
+                
+                updateWalletUI();
+                await getWalletDetails();
+                setupEventListeners();
+                
+                showNotification('Wallet connected successfully!', 'success');
+            } catch (error) {
+                if (error.code === 4001) {
+                    showNotification('Connection rejected by user', 'error');
+                } else {
+                    showNotification('Connection failed: ' + error.message, 'error');
+                }
+            }
+        }
+
+        // Update UI when connected
+        function updateWalletUI() {
+            const btn = document.getElementById('connectBtn');
+            const info = document.getElementById('walletInfo');
+            
+            btn.style.display = 'none';
+            info.classList.add('active');
+            
+            // Truncate address
+            const shortAddress = currentAccount.substring(0, 6) + '...' + currentAccount.substring(38);
+            document.getElementById('accountAddress').textContent = shortAddress;
+        }
+
+        // Get wallet details
+        async function getWalletDetails() {
+            try {
+                // Get balance
+                const balance = await provider.request({
+                    method: 'eth_getBalance',
+                    params: [currentAccount, 'latest']
+                });
+                
+                const ethBalance = (parseInt(balance, 16) / 1e18).toFixed(4);
+                document.getElementById('balance').textContent = ethBalance + ' ETH';
+                
+                // Get network
+                const chainId = await provider.request({ method: 'eth_chainId' });
+                const networkName = getNetworkName(parseInt(chainId, 16));
+                document.getElementById('networkName').textContent = networkName;
+                
+            } catch (error) {
+                console.error('Error getting wallet details:', error);
+            }
+        }
+
+        // Get network name
+        function getNetworkName(chainId) {
+            const networks = {
+                1: 'Ethereum Mainnet',
+                5: 'Goerli Testnet',
+                11155111: 'Sepolia Testnet',
+                137: 'Polygon',
+                56: 'BSC',
+                42161: 'Arbitrum',
+                10: 'Optimism',
+                43114: 'Avalanche'
+            };
+            return networks[chainId] || `Chain ID: ${chainId}`;
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            provider.on('accountsChanged', (accounts) => {
+                if (accounts.length === 0) {
+                    disconnectWallet();
+                } else {
+                    currentAccount = accounts[0];
+                    updateWalletUI();
+                    getWalletDetails();
+                }
+            });
+
+            provider.on('chainChanged', (chainId) => {
+                window.location.reload();
+            });
+        }
+
+        // Disconnect wallet
+        function disconnectWallet() {
+            isConnected = false;
+            currentAccount = null;
+            
+            document.getElementById('connectBtn').style.display = 'inline-flex';
+            document.getElementById('walletInfo').classList.remove('active');
+            
+            showNotification('Wallet disconnected', 'info');
+        }
+
+        // Toggle lock items
+        function toggleLock(element, lockType) {
+            element.classList.toggle('active');
+            
+            const isActive = element.classList.contains('active');
+            const action = isActive ? 'activated' : 'deactivated';
+            
+            showNotification(`${lockType} ${action}`, isActive ? 'success' : 'warning');
+            
+            // Add to security log
+            addLogEntry(
+                isActive ? 'log-success' : 'log-warning',
+                isActive ? 'fa-check' : 'fa-exclamation',
+                `${lockType} ${action}`,
+                `Just now • Security layer ${action}`
+            );
+        }
+
+        // Emergency functions
+        function emergencyLock() {
+            // Activate all locks
+            document.querySelectorAll('.lock-item').forEach(item => {
+                item.classList.add('active');
+            });
+            
+            showNotification('EMERGENCY LOCK ACTIVATED - All protections enabled', 'error');
+            addLogEntry('log-danger', 'fa-lock', 'Emergency Lock Activated', 'Just now • All transactions blocked');
+        }
+
+        function emergencyFreeze() {
+            showNotification('All assets frozen. No transactions possible for 24 hours.', 'error');
+            addLogEntry('log-danger', 'fa-snowflake', 'Emergency Freeze', 'Just now • Complete lockdown initiated');
+        }
+
+        function emergencyDisconnect() {
+            disconnectWallet();
+            showNotification('All connections terminated', 'error');
+        }
+
+        function emergencyRevoke() {
+            showNotification('Revoking all token approvals... Check Revoke.cash', 'warning');
+            window.open('https://revoke.cash', '_blank');
+        }
+
+        // Modal functions
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // Save settings functions
+        function saveMultiSig() {
+            const threshold = document.getElementById('thresholdAmount').value;
+            showNotification(`Multi-sig configured: ${threshold} ETH threshold`, 'success');
+            closeModal('multisigModal');
+            updateSecurityScore(10);
+        }
+
+        function saveTimeLock() {
+            const delay = document.getElementById('delayDuration').value;
+            showNotification(`Time lock set to ${delay} hours`, 'success');
+            closeModal('timelockModal');
+        }
+
+        function saveLimits() {
+            showNotification('Spending limits updated', 'success');
+            closeModal('limitsModal');
+        }
+
+        function connectHardware() {
+            showNotification('Connecting hardware wallet... Please confirm on device', 'info');
+            closeModal('hardwareModal');
+            updateSecurityScore(15);
+        }
+
+        function saveBiometric() {
+            showNotification('Biometric settings saved', 'success');
+            closeModal('biometricModal');
+        }
+
+        function addToWhitelist() {
+            const address = document.getElementById('newAddress').value;
+            if (address) {
+                showNotification('Address added to whitelist', 'success');
+                document.getElementById('newAddress').value = '';
+                document.getElementById('addressLabel').value = '';
+            }
+        }
+
+        // Update security score
+        function updateSecurityScore(increase) {
+            const scoreElement = document.querySelector('.score-text');
+            let currentScore = parseInt(scoreElement.textContent);
+            currentScore = Math.min(100, currentScore + increase);
+            scoreElement.textContent = currentScore + '%';
+            
+            // Update circle progress
+            const circle = document.querySelector('.score-circle-progress');
+            const offset = 408 - (408 * currentScore / 100);
+            circle.style.strokeDashoffset = offset;
+        }
+
+        // Add log entry
+        function addLogEntry(iconClass, icon, title, time) {
+            const logContainer = document.querySelector('.security-log');
+            const newEntry = document.createElement('div');
+            newEntry.className = 'log-entry';
+            newEntry.innerHTML = `
+                <div class="log-icon ${iconClass}">
+                    <i class="fas ${icon}"></i>
+                </div>
+                <div class="log-content">
+                    <div class="log-title">${title}</div>
+                    <div class="log-time">${time}</div>
+                </div>
+            `;
+            logContainer.insertBefore(newEntry, logContainer.children[1]);
+        }
+
+        // Notification system
+        function showNotification(message, type) {
+            // Create notification element
+            const notif = document.createElement('div');
+            notif.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                color: white;
+                font-weight: 500;
+                z-index: 3000;
+                animation: slideIn 0.3s;
+                max-width: 400px;
+            `;
+            
+            const colors = {
+                success: '#28a745',
+                error: '#dc3545',
+                warning: '#ffc107',
+                info: '#17a2b8'
+            };
+            
+            notif.style.background = colors[type] || colors.info;
+            notif.textContent = message;
+            
+            document.body.appendChild(notif);
+            
+            setTimeout(() => {
+                notif.remove();
+            }, 5000);
+        }
+
+        // Close modals on outside click
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('active');
+            }
+        }
+
+        // Simulate security scanning
+        setInterval(() => {
+            if (Math.random() > 0.7) {
+                const threats = [
+                    'Phishing attempt blocked',
+                    'Suspicious contract detected',
+                    'High-risk dApp connection prevented',
+                    'Unauthorized signature request blocked'
+                ];
+                const threat = threats[Math.floor(Math.random() * threats.length)];
+                addLogEntry('log-success', 'fa-shield-alt', threat, 'Just now');
+            }
+        }, 30000); // Every 30 seconds
+    </script>
+
+</body>
+</html>
