@@ -1,0 +1,1 @@
+# MetaMask-vault-lock
